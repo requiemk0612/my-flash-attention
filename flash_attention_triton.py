@@ -513,10 +513,10 @@ def _attn_bwd_dk_dv(
     tl.store(dK_block_ptrs, dK_block)
 
 
-class TritonAttention(torch.autograd.Function):
+class TritonAttention(torch.autograd.Function): # torch中每一个自定义的操作都要继承这个类，要实现前向/反向传播
 
     @staticmethod
-    def forward(ctx, Q, K, V, causal, softmax_scale):
+    def forward(ctx, Q, K, V, causal, softmax_scale): # 计算反向传播需要服用前向传播中计算的激活值，这里的ctx用于存储它们
         HEAD_DIM_Q, HEAD_DIM_K = Q.shape[-1], K.shape[-1]
         HEAD_DIM_V = V.shape[-1]
 
@@ -661,7 +661,8 @@ class TritonAttention(torch.autograd.Function):
         return dQ, dK, dV, None, None
 
 
-def test_op(BATCH_SIZE, NUM_HEADS, SEQ_LEN, HEAD_DIM, causal, dtype=torch.float16):
+def test_op(BATCH_SIZE, NUM_HEADS, SEQ_LEN, HEAD_DIM, causal, dtype=torch.float16): 
+    """创建用于测试的QKV，使用正态分布"""
     Q = (
         torch.empty(
             (BATCH_SIZE, NUM_HEADS, SEQ_LEN, HEAD_DIM), dtype=dtype, device="cuda"
