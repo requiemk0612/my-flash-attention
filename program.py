@@ -539,7 +539,7 @@ class TritonAttention(torch.autograd.Function): # torch中每一个自定义的�
         )
 
         _attn_fwd[grid](
-            Q=Q,
+            Q=Q, # 此处的QKV等指的都是一些指向首元素的指针，因此需要stride等信息辅助定位
             K=K,
             V=V,
             softmax_scale=softmax_scale,
